@@ -1,0 +1,13 @@
+{
+  "appId": "com.matchmanager.personal",
+  "appName": "ניהול מועמדים לשידוכים",
+  "webDir": "www",
+  "server": {
+    "url": "https://e0533125285-maker.github.io/my-catalog/",
+    "cleartext": false,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
