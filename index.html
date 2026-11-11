@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101827"><title>ניהול מועמדים לשידוכים</title>
+<meta name="theme-color" content="#101827"><meta name="description" content="מערכת אישית לניהול מועמדים לשידוכים"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><title>ניהול מועמדים לשידוכים</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#121d2d;--line:#26364b;--muted:#9aabc0;--gold:#d9b875;--white:#f4f6fa}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#1b2b40 0,transparent 36%),var(--bg);color:var(--white);font-family:Arial,sans-serif}
@@ -55,5 +55,5 @@ async function show(id){active=(await all()).find(p=>p.id===id);if(!active)retur
 $('#closeView').onclick=()=>$('#viewer').close();$('#edit').onclick=()=>{const p=active;$('#viewer').close();openEditor(p)};$('#remove').onclick=async()=>{if(active&&confirm('למחוק את המועמד?')){await del(active.id);$('#viewer').close();render()}};
 $('#backup').onclick=async()=>{const rows=await all();const out=[];for(const p of rows){const enc=async b=>b?{type:b.type,data:Array.from(new Uint8Array(await b.arrayBuffer()),x=>String.fromCharCode(x)).join('')}:null;out.push({...p,photo:await enc(p.photo),document:await enc(p.document)})}const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='גיבוי-מועמדים.json';a.click();URL.revokeObjectURL(a.href)};
 $('#restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const rows=JSON.parse(await file.text());for(const p of rows){for(const k of ['photo','document'])if(p[k]?.data){const s=p[k].data,bytes=Uint8Array.from(s,c=>c.charCodeAt(0));p[k]=new Blob([bytes],{type:p[k].type})}await save(p)}alert('הגיבוי נטען בהצלחה');render()}catch{alert('קובץ הגיבוי אינו תקין')}e.target.value=''};
-openDB().then(x=>{db=x;render()}).catch(()=>alert('לא ניתן לפתוח אחסון בדפדפן זה'));
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}\nopenDB().then(x=>{db=x;render()}).catch(()=>alert('לא ניתן לפתוח אחסון בדפדפן זה'));
 </script></body></html>
