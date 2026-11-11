@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827"><title>ניהול מועמדים לשידוכים</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2d;--line:#26364b;--muted:#9aabc0;--gold:#d9b875;--white:#f4f6fa}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#1b2b40 0,transparent 36%),var(--bg);color:var(--white);font-family:Arial,sans-serif}
+header{padding:25px 18px 18px;max-width:1100px;margin:auto}h1{margin:0 0 7px;font-size:27px}header p{margin:0;color:var(--muted)}
+main{max-width:1100px;margin:auto;padding:0 16px 40px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
+input,textarea,select{width:100%;background:#0c1625;color:var(--white);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit}
+.search{flex:1;min-width:210px}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:bold;cursor:pointer;background:var(--gold);color:#17202b}.btn.secondary{background:#24354b;color:#fff}.btn.danger{background:#6b2934;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(160deg,#172438,#101a29);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:.15s}.card:hover{transform:translateY(-2px);border-color:var(--gold)}
+.photo{height:190px;background:#0a1422;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}.photo img{width:100%;height:100%;object-fit:cover}.cardbody{padding:14px}.card h3{margin:0 0 7px}.muted{color:var(--muted);font-size:13px}.tag{display:inline-block;border:1px solid #3a4c62;border-radius:20px;padding:4px 9px;font-size:12px;margin-top:9px}
+.empty{border:1px dashed #3a4c62;border-radius:15px;padding:35px;text-align:center;color:var(--muted);grid-column:1/-1}
+dialog{width:min(620px,94vw);max-height:90vh;overflow:auto;background:#111d2d;color:var(--white);border:1px solid var(--line);border-radius:18px;padding:20px}dialog::backdrop{background:#000b}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}.field label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}.wide{grid-column:1/-1}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.detailphoto{width:130px;height:150px;object-fit:cover;border-radius:12px;background:#0a1422}.filelink{display:block;color:var(--gold);margin:8px 0}
+.notice{font-size:12px;color:#c5b58f;line-height:1.6;margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
+@media(max-width:520px){.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}h1{font-size:23px}}
+</style></head>
+<body>
+<header><h1>ניהול מועמדים לשידוכים</h1><p>המערכת האישית שלך · כל המועמדים במקום אחד</p></header>
+<main>
+<div class="toolbar"><input id="search" class="search" placeholder="חיפוש לפי שם, עיר, גיל או הערות…"><button class="btn" id="add">＋ הוספת מועמד</button><button class="btn secondary" id="backup">ייצוא גיבוי</button><label class="btn secondary" for="restore" style="cursor:pointer">ייבוא גיבוי</label><input id="restore" type="file" accept="application/json" hidden></div>
+<div id="count" class="muted"></div><section id="cards" class="grid"></section>
+<p class="notice">פרטיות: בשלב זה המידע נשמר במכשיר ובדפדפן שבו הוזן בלבד. אין סנכרון לענן ואין משתמשים נוספים. אל תזין מידע אמיתי לפני שמוודאים שהמכשיר מוגן. מומלץ לייצא גיבוי ולשמור אותו במקום מאובטח.</p>
+</main>
+<dialog id="editor"><form id="candidateForm"><h2 id="formTitle">הוספת מועמד</h2><div class="formgrid">
+<div class="field"><label>שם מלא *</label><input name="name" required maxlength="100"></div>
+<div class="field"><label>גיל</label><input name="age" type="number" min="16" max="120"></div>
+<div class="field"><label>עיר</label><input name="city"></div>
+<div class="field"><label>סטטוס</label><select name="status"><option>רווק/ה</option><option>גרוש/ה</option><option>אלמן/ה</option><option>אחר</option></select></div>
+<div class="field wide"><label>פרטים / קורות חיים</label><textarea name="resume" rows="6" placeholder="רקע, לימודים, משפחה, עיסוק ופרטים רלוונטיים…"></textarea></div>
+<div class="field"><label>תמונה</label><input name="photo" type="file" accept="image/*"></div>
+<div class="field"><label>קובץ קורות חיים (PDF/Word)</label><input name="document" type="file" accept=".pdf,.doc,.docx,image/*"></div>
+<div class="field wide"><label>הערות פרטיות</label><textarea name="notes" rows="3"></textarea></div></div>
+<div class="actions"><button class="btn" type="submit">שמירה</button><button class="btn secondary" type="button" id="cancel">ביטול</button></div></form></dialog>
+<dialog id="viewer"><div id="viewContent"></div><div class="actions"><button class="btn" id="edit">עריכה</button><button class="btn danger" id="remove">מחיקה</button><button class="btn secondary" id="closeView">סגירה</button></div></dialog>
+<script>
+const DB='match_candidates_v1',STORE='people';let db,editing=null,active=null;
+const $=s=>document.querySelector(s);
+function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onupgradeneeded=()=>req.result.createObjectStore(STORE,{keyPath:'id'});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+function all(){return new Promise((res,rej)=>{const r=db.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function save(p){return new Promise((res,rej)=>{const r=db.transaction(STORE,'readwrite').objectStore(STORE).put(p);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function del(id){return new Promise((res,rej)=>{const r=db.transaction(STORE,'readwrite').objectStore(STORE).delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function url(blob){return blob?URL.createObjectURL(blob):''}
+async function render(){const list=await all(),q=$('#search').value.trim().toLowerCase();const filtered=list.filter(p=>[p.name,p.city,p.age,p.notes,p.resume].join(' ').toLowerCase().includes(q));$('#count').textContent='נמצאו '+filtered.length+' מועמדים';$('#cards').innerHTML='';if(!filtered.length){$('#cards').innerHTML='<div class="empty">עדיין אין מועמדים להצגה.<br>לחץ על ״הוספת מועמד״ כדי להתחיל.</div>';return}
+filtered.sort((a,b)=>a.name.localeCompare(b.name,'he')).forEach(p=>{const c=document.createElement('article');c.className='card';const ph=document.createElement('div');ph.className='photo';if(p.photo){const im=document.createElement('img');im.src=url(p.photo);im.alt='תמונה של '+p.name;ph.append(im)}else ph.textContent='אין תמונה';const body=document.createElement('div');body.className='cardbody';const h=document.createElement('h3');h.textContent=p.name;const meta=document.createElement('div');meta.className='muted';meta.textContent=[p.age&&('גיל '+p.age),p.city,p.status].filter(Boolean).join(' · ');const tag=document.createElement('span');tag.className='tag';tag.textContent=p.document?'קיים קובץ מצורף':'כרטיס מועמד';body.append(h,meta,tag);c.append(ph,body);c.onclick=()=>show(p.id);$('#cards').append(c)})}
+function readFile(f){return f?f.arrayBuffer().then(b=>new Blob([b],{type:f.type||'application/octet-stream'})):Promise.resolve(null)}
+$('#add').onclick=()=>openEditor();$('#cancel').onclick=()=>$('#editor').close();$('#search').oninput=render;
+function openEditor(p){editing=p?.id||null;const f=$('#candidateForm');f.reset();$('#formTitle').textContent=p?'עריכת מועמד':'הוספת מועמד';if(p)for(const k of ['name','age','city','status','resume','notes'])f.elements[k].value=p[k]||'';$('#editor').showModal()}
+$('#candidateForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,old=editing?(await all()).find(x=>x.id===editing):null;const photo=f.elements.photo.files[0],documentFile=f.elements.document.files[0];const p={...(old||{}),id:editing||crypto.randomUUID(),name:f.elements.name.value.trim(),age:f.elements.age.value,city:f.elements.city.value.trim(),status:f.elements.status.value,resume:f.elements.resume.value,notes:f.elements.notes.value,photo:photo?await readFile(photo):old?.photo||null,document:documentFile?await readFile(documentFile):old?.document||null,documentName:documentFile?.name||old?.documentName||''};await save(p);$('#editor').close();await render()};
+async function show(id){active=(await all()).find(p=>p.id===id);if(!active)return;const v=$('#viewContent');v.innerHTML='';const h=document.createElement('h2');h.textContent=active.name;v.append(h);if(active.photo){const im=document.createElement('img');im.className='detailphoto';im.src=url(active.photo);im.alt='תמונה';v.append(im)}const info=document.createElement('p');info.textContent=[active.age&&('גיל: '+active.age),active.city&&('עיר: '+active.city),active.status].filter(Boolean).join(' · ');v.append(info);[['קורות חיים',active.resume],['הערות',active.notes]].forEach(([t,x])=>{if(x){const hh=document.createElement('h3');hh.textContent=t;const pp=document.createElement('p');pp.style.whiteSpace='pre-wrap';pp.textContent=x;v.append(hh,pp)}});if(active.document){const a=document.createElement('a');a.className='filelink';a.href=url(active.document);a.download=active.documentName||'resume';a.textContent='פתיחת קובץ: '+(active.documentName||'קורות חיים');v.append(a)}$('#viewer').showModal()}
+$('#closeView').onclick=()=>$('#viewer').close();$('#edit').onclick=()=>{const p=active;$('#viewer').close();openEditor(p)};$('#remove').onclick=async()=>{if(active&&confirm('למחוק את המועמד?')){await del(active.id);$('#viewer').close();render()}};
+$('#backup').onclick=async()=>{const rows=await all();const out=[];for(const p of rows){const enc=async b=>b?{type:b.type,data:Array.from(new Uint8Array(await b.arrayBuffer()),x=>String.fromCharCode(x)).join('')}:null;out.push({...p,photo:await enc(p.photo),document:await enc(p.document)})}const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='גיבוי-מועמדים.json';a.click();URL.revokeObjectURL(a.href)};
+$('#restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const rows=JSON.parse(await file.text());for(const p of rows){for(const k of ['photo','document'])if(p[k]?.data){const s=p[k].data,bytes=Uint8Array.from(s,c=>c.charCodeAt(0));p[k]=new Blob([bytes],{type:p[k].type})}await save(p)}alert('הגיבוי נטען בהצלחה');render()}catch{alert('קובץ הגיבוי אינו תקין')}e.target.value=''};
+openDB().then(x=>{db=x;render()}).catch(()=>alert('לא ניתן לפתוח אחסון בדפדפן זה'));
+</script></body></html>
