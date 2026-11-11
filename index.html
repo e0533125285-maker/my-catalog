@@ -4,20 +4,22 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101827"><meta name="description" content="מערכת אישית לניהול מועמדים לשידוכים"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><title>ניהול מועמדים לשידוכים</title>
 <style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2d;--line:#26364b;--muted:#9aabc0;--gold:#d9b875;--white:#f4f6fa}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#1b2b40 0,transparent 36%),var(--bg);color:var(--white);font-family:Arial,sans-serif}
-header{padding:25px 18px 18px;max-width:1100px;margin:auto}h1{margin:0 0 7px;font-size:27px}header p{margin:0;color:var(--muted)}
-main{max-width:1100px;margin:auto;padding:0 16px 40px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px}
-input,textarea,select{width:100%;background:#0c1625;color:var(--white);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit}
-.search{flex:1;min-width:210px}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:bold;cursor:pointer;background:var(--gold);color:#17202b}.btn.secondary{background:#24354b;color:#fff}.btn.danger{background:#6b2934;color:white}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(160deg,#172438,#101a29);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:.15s}.card:hover{transform:translateY(-2px);border-color:var(--gold)}
-.photo{height:190px;background:#0a1422;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}.photo img{width:100%;height:100%;object-fit:cover}.cardbody{padding:14px}.card h3{margin:0 0 7px}.muted{color:var(--muted);font-size:13px}.tag{display:inline-block;border:1px solid #3a4c62;border-radius:20px;padding:4px 9px;font-size:12px;margin-top:9px}
-.empty{border:1px dashed #3a4c62;border-radius:15px;padding:35px;text-align:center;color:var(--muted);grid-column:1/-1}
-dialog{width:min(620px,94vw);max-height:90vh;overflow:auto;background:#111d2d;color:var(--white);border:1px solid var(--line);border-radius:18px;padding:20px}dialog::backdrop{background:#000b}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}.field label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}.wide{grid-column:1/-1}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.detailphoto{width:130px;height:150px;object-fit:cover;border-radius:12px;background:#0a1422}.filelink{display:block;color:var(--gold);margin:8px 0}
-.notice{font-size:12px;color:#c5b58f;line-height:1.6;margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
-@media(max-width:520px){.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}h1{font-size:23px}}
+:root{color-scheme:dark;--bg:#09111f;--panel:#121f31;--line:#2b3d55;--muted:#a9b8ca;--gold:#e1c17e;--white:#f7f8fb}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 85% -8%,#29415d 0,transparent 42%),linear-gradient(145deg,#09111f,#0d1929 60%,#09111f);color:var(--white);font-family:Arial,sans-serif}
+header{padding:34px 20px 25px;max-width:1120px;margin:auto;border-bottom:1px solid #ffffff12}h1{margin:0 0 9px;font-size:30px;letter-spacing:-.5px}header p{margin:0;color:var(--muted);font-size:15px}
+main{max-width:1120px;margin:auto;padding:22px 18px 48px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px;align-items:center}
+input,textarea,select{width:100%;background:#0b1727;color:var(--white);border:1px solid var(--line);border-radius:12px;padding:13px;font:inherit;outline:none;transition:border-color .18s,box-shadow .18s}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #e1c17e20}
+.search{flex:1;min-width:210px;min-height:46px}.btn{border:1px solid transparent;border-radius:12px;padding:13px 17px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#f0d99f,#d4b36d);color:#17202b;transition:transform .18s,filter .18s;min-height:44px}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:active{transform:translateY(0)}.btn.secondary{background:#1b2c42;border-color:#344a64;color:#f3f6fa}.btn.danger{background:#6b2934;color:white}
+#count{padding:0 3px 13px;font-size:14px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:18px}.card{background:linear-gradient(155deg,#17283e,#101c2c);border:1px solid #2c4059;border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;box-shadow:0 8px 24px #0002}.card:hover{transform:translateY(-4px);border-color:#c9aa6d;box-shadow:0 14px 30px #0004}
+.photo{height:215px;background:linear-gradient(135deg,#14263b,#0b1727);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}.photo img{width:100%;height:100%;object-fit:cover}.cardbody{padding:16px}.card h3{margin:0 0 9px;font-size:18px}.muted{color:var(--muted);font-size:13px;line-height:1.6}.tag{display:inline-block;border:1px solid #52647a;border-radius:30px;padding:5px 11px;font-size:12px;margin-top:11px;color:#e7d4aa;background:#d9b87512}
+.empty{border:1px dashed #52647a;border-radius:18px;padding:42px 20px;text-align:center;color:var(--muted);grid-column:1/-1;background:#ffffff05;line-height:1.9}
+dialog{width:min(650px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(155deg,#17283e,#101a29);color:var(--white);border:1px solid #40536b;border-radius:20px;padding:22px;box-shadow:0 24px 80px #0009}dialog::backdrop{background:#020711c9;backdrop-filter:blur(4px)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{margin-bottom:10px}.field label{display:block;font-size:13px;color:#c0ccda;margin:0 0 7px}.wide{grid-column:1/-1}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.detailphoto{width:150px;height:175px;object-fit:cover;border-radius:15px;background:#0a1422;border:1px solid #52647a}.filelink{display:block;color:var(--gold);margin:10px 0;text-decoration:none}.filelink:hover{text-decoration:underline}
+.notice{font-size:12px;color:#d2c29e;line-height:1.8;margin-top:28px;border:1px solid #66563866;background:#d9b8750a;border-radius:14px;padding:13px 15px}
+@media(max-width:600px){header{padding:26px 17px 20px}h1{font-size:24px}main{padding:17px 13px 35px}.toolbar>*{flex:1 1 calc(50% - 8px)}.toolbar .search{flex-basis:100%}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:155px}.cardbody{padding:12px}.card h3{font-size:16px}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.actions .btn{flex:1}}
+@media(max-width:360px){.grid{grid-template-columns:1fr}.photo{height:205px}}
 </style></head>
 <body>
 <header><h1>ניהול מועמדים לשידוכים</h1><p>המערכת האישית שלך · כל המועמדים במקום אחד</p></header>
