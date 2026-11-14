@@ -17,6 +17,14 @@ input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 
 dialog{width:min(650px,94vw);max-height:90vh;overflow:auto;background:linear-gradient(155deg,#17283e,#101a29);color:var(--white);border:1px solid #40536b;border-radius:20px;padding:22px;box-shadow:0 24px 80px #0009}dialog::backdrop{background:#020711c9;backdrop-filter:blur(4px)}
 .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{margin-bottom:10px}.field label{display:block;font-size:13px;color:#c0ccda;margin:0 0 7px}.wide{grid-column:1/-1}
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.detailphoto{width:150px;height:175px;object-fit:cover;border-radius:15px;background:#0a1422;border:1px solid #52647a}.filelink{display:block;color:var(--gold);margin:10px 0;text-decoration:none}.filelink:hover{text-decoration:underline}
+.smart-panel{margin:0 0 22px;padding:18px;border:1px solid #5b513d;border-radius:18px;background:linear-gradient(145deg,#192a40,#111d2d);box-shadow:0 10px 28px #0002}
+.smart-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.smart-head h2{font-size:19px;margin:0 0 6px;color:#f0d99f}.smart-head p{margin:0;color:var(--muted);font-size:13px}
+.smart-report{margin-top:14px}.smart-empty{padding:12px;border-radius:12px;background:#ffffff08;color:var(--muted);font-size:13px;line-height:1.7}
+.smart-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:9px;margin-bottom:12px}
+.smart-stat{padding:12px;border:1px solid #344a64;border-radius:12px;background:#0b1727}.smart-stat strong{display:block;color:#f0d99f;font-size:23px;margin-bottom:4px}.smart-stat span{font-size:12px;color:var(--muted)}
+.smart-list{padding:12px;border:1px solid #344a64;border-radius:12px;margin-top:9px;background:#0b1727;font-size:13px;line-height:1.8}
+.smart-list h3{margin:0 0 5px;color:#f0d99f;font-size:15px}.smart-list ul{margin:4px 0;padding-right:20px}.smart-list li{margin:3px 0}
 .notice{font-size:12px;color:#d2c29e;line-height:1.8;margin-top:28px;border:1px solid #66563866;background:#d9b8750a;border-radius:14px;padding:13px 15px}
 @media(max-width:600px){header{padding:26px 17px 20px}h1{font-size:24px}main{padding:17px 13px 35px}.toolbar>*{flex:1 1 calc(50% - 8px)}.toolbar .search{flex-basis:100%}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:155px}.cardbody{padding:12px}.card h3{font-size:16px}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.actions .btn{flex:1}}
 @media(max-width:360px){.grid{grid-template-columns:1fr}.photo{height:205px}}
@@ -25,7 +33,12 @@ dialog{width:min(650px,94vw);max-height:90vh;overflow:auto;background:linear-gra
 <header><h1>ניהול מועמדים לשידוכים</h1><p>המערכת האישית שלך · כל המועמדים במקום אחד</p></header>
 <main>
 <div class="toolbar"><input id="search" class="search" placeholder="חיפוש לפי שם, עיר, גיל, רזומה או הערות…"><select id="statusFilter" aria-label="סינון לפי סטטוס" style="max-width:150px"><option value="">כל הסטטוסים</option><option>רווק/ה</option><option>גרוש/ה</option><option>אלמן/ה</option><option>אחר</option></select><input id="minAge" type="number" min="16" max="120" placeholder="גיל מינימלי" aria-label="גיל מינימלי" style="max-width:120px"><input id="maxAge" type="number" min="16" max="120" placeholder="גיל מקסימלי" aria-label="גיל מקסימלי" style="max-width:120px"><button class="btn secondary" id="installApp" type="button">⬇ התקנת האפליקציה</button><button class="btn" id="add">＋ הוספת מועמד</button><button class="btn secondary" id="backup">ייצוא גיבוי</button><label class="btn secondary" for="restore" style="cursor:pointer">ייבוא גיבוי</label><input id="restore" type="file" accept="application/json" hidden></div>
-<div id="count" class="muted"></div><section id="cards" class="grid"></section>
+<div id="count" class="muted"></div>
+<section class="smart-panel">
+  <div class="smart-head"><div><h2>מרכז כלים חכמים</h2><p>בדיקות וסיכומים מקומיים — המידע נשאר בדפדפן שלך</p></div><button class="btn secondary" id="smartRun" type="button">הפעל בדיקה</button></div>
+  <div id="smartReport" class="smart-report"><div class="smart-empty">לחץ על ״הפעל בדיקה״ לקבלת תמונת מצב על המאגר.</div></div>
+</section>
+<section id="cards" class="grid"></section>
 <p class="notice">פרטיות: בשלב זה המידע נשמר במכשיר ובדפדפן שבו הוזן בלבד. אין סנכרון לענן ואין משתמשים נוספים. אל תזין מידע אמיתי לפני שמוודאים שהמכשיר מוגן. מומלץ לייצא גיבוי ולשמור אותו במקום מאובטח.</p>
 </main>
 <dialog id="editor"><form id="candidateForm"><h2 id="formTitle">הוספת מועמד</h2><div class="formgrid">
@@ -56,8 +69,37 @@ function openEditor(p){editing=p?.id||null;const f=$('#candidateForm');f.reset()
 $('#candidateForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,old=editing?(await all()).find(x=>x.id===editing):null;const photo=f.elements.photo.files[0],documentFile=f.elements.document.files[0];const p={...(old||{}),id:editing||crypto.randomUUID(),name:f.elements.name.value.trim(),age:f.elements.age.value,city:f.elements.city.value.trim(),status:f.elements.status.value,resume:f.elements.resume.value,notes:f.elements.notes.value,photo:photo?await readFile(photo):old?.photo||null,photo2:f.elements.photo2.files[0]?await readFile(f.elements.photo2.files[0]):old?.photo2||null,document:documentFile?await readFile(documentFile):old?.document||null,documentName:documentFile?.name||old?.documentName||''};await save(p);$('#editor').close();await render()};
 async function show(id){active=(await all()).find(p=>p.id===id);if(!active)return;const v=$('#viewContent');v.innerHTML='';const h=document.createElement('h2');h.textContent=active.name;v.append(h);const resumeTitle=document.createElement('h3');resumeTitle.id='resume-section';resumeTitle.textContent='קורות חיים';for(const pic of [active.photo,active.photo2])if(pic){const im=document.createElement('img');im.className='detailphoto';im.src=url(pic);im.alt='תמונה של '+active.name;im.title='לחיצה לפתיחת קורות החיים';im.style.cursor='pointer';im.onclick=()=>{if(active.document){const u=url(active.document);window.open(u,'_blank','noopener');}else{resumeTitle.scrollIntoView({behavior:'smooth',block:'center'});}};v.append(im)}if(active.photo||active.photo2){const hint=document.createElement('div');hint.className='muted';hint.textContent='לחיצה על אחת התמונות תפתח את קובץ קורות החיים, או תעביר לפרטים';v.append(hint)}const info=document.createElement('p');info.textContent=[active.age&&('גיל: '+active.age),active.city&&('עיר: '+active.city),active.status].filter(Boolean).join(' · ');v.append(info);if(active.resume){v.append(resumeTitle);const pp=document.createElement('p');pp.style.whiteSpace='pre-wrap';pp.textContent=active.resume;v.append(pp)}if(active.notes){const hh=document.createElement('h3');hh.textContent='הערות פרטיות';const pp=document.createElement('p');pp.style.whiteSpace='pre-wrap';pp.textContent=active.notes;v.append(hh,pp)}if(active.document){const a=document.createElement('a');a.className='filelink';a.href=url(active.document);a.target='_blank';a.rel='noopener';a.textContent='פתיחת קובץ: '+(active.documentName||'קורות חיים');v.append(a)}$('#viewer').showModal()}
 $('#closeView').onclick=()=>$('#viewer').close();$('#edit').onclick=()=>{const p=active;$('#viewer').close();openEditor(p)};$('#remove').onclick=async()=>{if(active&&confirm('למחוק את המועמד?')){await del(active.id);$('#viewer').close();render()}};
-$('#backup').onclick=async()=>{const rows=await all();const out=[];for(const p of rows){const enc=async b=>b?{type:b.type,data:Array.from(new Uint8Array(await b.arrayBuffer()),x=>String.fromCharCode(x)).join('')}:null;out.push({...p,photo:await enc(p.photo),document:await enc(p.document)})}const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='גיבוי-מועמדים.json';a.click();URL.revokeObjectURL(a.href)};
+$('#backup').onclick=async()=>{const rows=await all();const out=[];for(const p of rows){const enc=async b=>b?{type:b.type,data:Array.from(new Uint8Array(await b.arrayBuffer()),x=>String.fromCharCode(x)).join('')}:null;out.push({...p,photo:await enc(p.photo),photo2:await enc(p.photo2),document:await enc(p.document)})}const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='גיבוי-מועמדים.json';a.click();URL.revokeObjectURL(a.href)};
 $('#restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const rows=JSON.parse(await file.text());for(const p of rows){for(const k of ['photo','photo2','document'])if(p[k]?.data){const s=p[k].data,bytes=Uint8Array.from(s,c=>c.charCodeAt(0));p[k]=new Blob([bytes],{type:p[k].type})}await save(p)}alert('הגיבוי נטען בהצלחה');render()}catch{alert('קובץ הגיבוי אינו תקין')}e.target.value=''};
-let installPrompt=null;const installButton=$('#installApp');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installButton.hidden=false});installButton.onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else{alert('במחשב: פתח את המערכת ב-Chrome או Edge ולחץ על סמל ההתקנה שבצד שורת הכתובת, או בתפריט ⋮ בחר התקן אפליקציה. בטלפון: בתפריט ⋮ בחר התקנת אפליקציה או הוספה למסך הבית.')}};if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+
+// כלים חכמים מקומיים: אין שליחת מידע לשרת או לשירות AI חיצוני.
+function normalizedName(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[\\s״׳"'.,-]/g,'').trim()}
+$('#smartRun').onclick=async()=>{
+  const rows=await all();
+  const total=rows.length;
+  const missing=rows.filter(p=>!p.age||!p.city||!String(p.resume||'').trim()||(!p.photo&&!p.photo2));
+  const seen=new Map(),duplicates=[];
+  for(const p of rows){const key=normalizedName(p.name);if(!key)continue;if(seen.has(key))duplicates.push([seen.get(key),p]);else seen.set(key,p)}
+  const withPhoto=rows.filter(p=>p.photo||p.photo2).length;
+  const withResume=rows.filter(p=>String(p.resume||'').trim()||p.document).length;
+  const avgAge=rows.filter(p=>Number(p.age)>0).map(p=>Number(p.age));
+  const average=avgAge.length?(avgAge.reduce((a,b)=>a+b,0)/avgAge.length).toFixed(1):'—';
+  const report=$('#smartReport');report.innerHTML='';
+  const stats=document.createElement('div');stats.className='smart-stats';
+  for(const [n,label] of [[total,'מועמדים במאגר'],[withPhoto,'עם תמונה אחת לפחות'],[withResume,'עם קורות חיים'],[missing.length,'רשומות להשלמה'],[duplicates.length,'חשדות לכפילויות'],[average,'גיל ממוצע']]){
+    const box=document.createElement('div');box.className='smart-stat';const strong=document.createElement('strong');strong.textContent=n;const span=document.createElement('span');span.textContent=label;box.append(strong,span);stats.append(box)
+  }
+  report.append(stats);
+  const addList=(title,items,empty)=>{
+    const box=document.createElement('div');box.className='smart-list';const h=document.createElement('h3');h.textContent=title;box.append(h);
+    if(!items.length){const p=document.createElement('div');p.textContent=empty;box.append(p)}
+    else{const ul=document.createElement('ul');for(const item of items){const li=document.createElement('li');li.textContent=item;ul.append(li)}box.append(ul)}
+    report.append(box)
+  };
+  addList('רשומות שכדאי להשלים',missing.slice(0,30).map(p=>p.name+' — חסר: '+[!p.age&&'גיל',!p.city&&'עיר',!String(p.resume||'').trim()&&!p.document&&'קורות חיים',!p.photo&&!p.photo2&&'תמונה'].filter(Boolean).join(', ')), 'כל הרשומות כוללות את הפרטים הבסיסיים שנבדקו.');
+  addList('שמות דומים — לבדיקה ידנית',duplicates.slice(0,30).map(pair=>pair[0].name+' · רשומה נוספת: '+pair[1].name), 'לא נמצאו שמות זהים במאגר.');
+  const note=document.createElement('div');note.className='smart-empty';note.textContent='הבדיקה מבוססת על שדות מקומיים בלבד. היא אינה קובעת התאמה בין אנשים ואינה שולחת תמונות או פרטים מחוץ למכשיר.';report.append(note);
+};
+\nlet installPrompt=null;const installButton=$('#installApp');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installButton.hidden=false});installButton.onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else{alert('במחשב: פתח את המערכת ב-Chrome או Edge ולחץ על סמל ההתקנה שבצד שורת הכתובת, או בתפריט ⋮ בחר התקן אפליקציה. בטלפון: בתפריט ⋮ בחר התקנת אפליקציה או הוספה למסך הבית.')}};if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 openDB().then(x=>{db=x;render()}).catch(()=>alert('לא ניתן לפתוח אחסון בדפדפן זה'));
 </script></body></html>
