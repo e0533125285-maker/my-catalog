@@ -73,7 +73,7 @@ $('#backup').onclick=async()=>{const rows=await all();const out=[];for(const p o
 $('#restore').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const rows=JSON.parse(await file.text());for(const p of rows){for(const k of ['photo','photo2','document'])if(p[k]?.data){const s=p[k].data,bytes=Uint8Array.from(s,c=>c.charCodeAt(0));p[k]=new Blob([bytes],{type:p[k].type})}await save(p)}alert('הגיבוי נטען בהצלחה');render()}catch{alert('קובץ הגיבוי אינו תקין')}e.target.value=''};
 
 // כלים חכמים מקומיים: אין שליחת מידע לשרת או לשירות AI חיצוני.
-function normalizedName(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[\\s״׳"'.,-]/g,'').trim()}
+function normalizedName(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[\s״׳"'.,-]/g,'').trim()}
 $('#smartRun').onclick=async()=>{
   const rows=await all();
   const total=rows.length;
@@ -100,6 +100,7 @@ $('#smartRun').onclick=async()=>{
   addList('שמות דומים — לבדיקה ידנית',duplicates.slice(0,30).map(pair=>pair[0].name+' · רשומה נוספת: '+pair[1].name), 'לא נמצאו שמות זהים במאגר.');
   const note=document.createElement('div');note.className='smart-empty';note.textContent='הבדיקה מבוססת על שדות מקומיים בלבד. היא אינה קובעת התאמה בין אנשים ואינה שולחת תמונות או פרטים מחוץ למכשיר.';report.append(note);
 };
-\nlet installPrompt=null;const installButton=$('#installApp');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installButton.hidden=false});installButton.onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else{alert('במחשב: פתח את המערכת ב-Chrome או Edge ולחץ על סמל ההתקנה שבצד שורת הכתובת, או בתפריט ⋮ בחר התקן אפליקציה. בטלפון: בתפריט ⋮ בחר התקנת אפליקציה או הוספה למסך הבית.')}};if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+
+let installPrompt=null;const installButton=$('#installApp');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installButton.hidden=false});installButton.onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else{alert('במחשב: פתח את המערכת ב-Chrome או Edge ולחץ על סמל ההתקנה שבצד שורת הכתובת, או בתפריט ⋮ בחר התקן אפליקציה. בטלפון: בתפריט ⋮ בחר התקנת אפליקציה או הוספה למסך הבית.')}};if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 openDB().then(x=>{db=x;render()}).catch(()=>alert('לא ניתן לפתוח אחסון בדפדפן זה'));
 </script></body></html>
